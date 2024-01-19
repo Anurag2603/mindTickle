@@ -1,0 +1,5 @@
+%dw 2.0
+
+type auto_d656d8f9_635d_4605_8f43_c332002a6c89_Output_Payload = {| message: String |} {"mediaType": "application/json",
+"encoding": "UTF-8"}
+

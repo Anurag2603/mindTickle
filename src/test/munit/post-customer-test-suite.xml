@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd   http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="post-customer-test-suite.xml"/>
+	<munit:test doc:id="9cb444db-8886-464f-ac59-2760f658a785" name="post-customer-test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:id="cc723d32-77de-40d3-809e-c924dfd9d1eb" doc:name="Mock POST Customer" processor="salesforce:create">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="6c98a3ac-d16d-4ad1-85b0-35d4bef4dcdb"/>
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload encoding="UTF-8" mediaType="application/json" value="#[output application/json  --- readUrl('classpath://postcustomertest/mock_payload.dwl')]"/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-event doc:id="1cceaa8a-eca6-428d-8ba3-304a5d2517ba" doc:name="Set Input">
+				<munit:payload mediaType="application/json" value="#[output application/json  --- readUrl('classpath://postcustomertest/set_event_payload.dwl')]"/>
+			</munit:set-event>
+			<flow-ref doc:id="6cbe6593-b938-4e73-b339-785073b493f6" doc:name="Flow-ref to post-customer" name="post:\customer:application\json:as-micorp-sapi-config"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:id="86714610-5d4a-465a-b75d-1dbc2d6111c5" doc:name="Assert payload" message="The payload does not match">
+				<munit-tools:that><![CDATA[#[%dw 2.0
+import postcustomertest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

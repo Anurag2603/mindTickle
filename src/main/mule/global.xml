@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="0fd8e0ff-ffeb-4134-b95d-1e5f574dc97a" >
+		<salesforce:basic-connection username="${db.sapi.username}" password="${secure::db.sapi.password}" securityToken="${secure::db.sapi.securityToken}"/>
+	</salesforce:sfdc-config>
+	<http:listener-config name="as-micorp-sapi-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" readTimeout="300000"/>
+    </http:listener-config>
+    <apikit:config name="as-micorp-sapi-config" api="resource::ce235d46-115c-497c-b0e2-474afd80f5e9:as-micorp-sapi:1.0.0:raml:zip:as-micorp-sapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="8f6eb32d-b8c5-4d6a-9b58-d63bc93a38cc" file="secure_properties\sec_prop_${env}.yaml" key="${enc.key}"/>
+   	<json-logger:config name="JSON_Logger_Config1" doc:name="JSON Logger Config" doc:id="b2373ce2-9202-4551-9052-bd4f33e8f462" environment="${env}" />
+	<configuration-properties doc:name="Configuration properties" doc:id="dec1de07-c443-48a1-89f3-a4ee3de203b1" file="properties\prop_${env}.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="aa07bf7b-0283-40a1-9844-057fb0a96aba" file="common_properties\common_prop.yaml" />
+	<api-gateway:autodiscovery apiId="19212564" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="ea626d22-d85c-4877-9b0f-1f82e13dc375" flowRef="as-micorp-sapi-main" />
+	<global-property doc:name="Global Property" doc:id="ec48b663-4585-4d7e-a25b-53407d7063b2" name="env" value="local" />
+	<global-property doc:name="Global Property" doc:id="daf16222-3585-4cff-b0e8-425472719e14" name="enc.key" value="abcdef0123456789" />   
+</mule>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:module-error-handler-plugin="http://www.mulesoft.org/schema/mule/module-error-handler-plugin" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/module-error-handler-plugin http://www.mulesoft.org/schema/mule/module-error-handler-plugin/current/mule-module-error-handler-plugin.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+
+<error-handler name="global-error-handlerError_Handler" doc:id="b41d2ff8-c24c-40a3-b363-93c326bc453e" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="841828b9-8d92-4300-b80d-9c9c870b3348" >
+			<module-error-handler-plugin:process-error doc:name="Process Error" doc:id="653f83ce-b7ce-4e72-a31a-66245511d3c2" />
+			<set-variable value="#[attributes.httpStatus]" doc:name="Set HTTP Status Code" doc:id="9860b09d-601b-44d4-82c1-c4fcf383b7d4" variableName="httpStatus"/>
+			<json-logger:logger doc:name="End" doc:id="bb308aa4-5fdf-40b5-b668-78cada501f81" config-ref="JSON_Logger_Config1" message='#["End"]'>
+				<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+{
+    payload: JSONLoggerModule::stringifyNonJSON(payload),
+    code: attributes.httpStatus,
+    	 message: attributes.errorLog
+}]]]></json-logger:content>
+			</json-logger:logger>
+		
+</on-error-continue>
+	</error-handler>
+
+	
+</mule>

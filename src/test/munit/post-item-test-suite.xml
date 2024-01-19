@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="post-item-test-suite.xml" />
+	<munit:test name="post-item-test-suite-post-itemTest" doc:id="ddcd3ea8-6292-4aa8-9d87-c598dcf4a4d1" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock POST Item" doc:id="ada16179-1dd7-4063-a63f-ebec5425c2fa" processor="salesforce:create">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="04110702-94c5-4f24-913c-9c24e621f606" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://postitemtest/mock_payload.dwl')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Input" doc:id="2950288e-e0db-47bf-bf74-30b6c6a57249" >
+				<munit:payload value="#[readUrl('classpath://postitemtest/set_event_payload.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post-item" doc:id="281d87e3-0541-4d79-ae83-2960c73029c8" name="post:\item:application\json:as-micorp-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert Payload" doc:id="4bbb070b-7cca-44a2-a950-18e6c1dad7e0" >
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postitemtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

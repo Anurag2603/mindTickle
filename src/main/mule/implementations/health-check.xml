@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="health-check" doc:id="d656d8f9-635d-4605-8f43-c332002a6c89" >
+		<json-logger:logger doc:name="Health Check Started" doc:id="12273ad9-957b-41cd-b401-280c72d67118" config-ref="JSON_Logger_Config1" message="Health Check Started"/>
+		<ee:transform doc:name="Transforming  Data">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "API is working fine"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<json-logger:logger doc:name="Health Check Ended" doc:id="4c6657db-65f8-4f25-849f-07c9c6873acf" config-ref="JSON_Logger_Config1" message="Health Check Ended"/>
+	</sub-flow>
+	
+</mule>

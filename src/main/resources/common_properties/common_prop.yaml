@@ -1,0 +1,8 @@
+http:
+  port: "8081"
+
+json:
+  logger:
+    application:
+      name: "as-micorp-sapi"
+      version: "1.0.0"
