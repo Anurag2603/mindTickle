@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="post-customer" doc:id="082223a6-0eee-4410-a93c-81f4df7f8224" >
+		<json-logger:logger doc:name="Posting Customer" doc:id="139f88fa-5d4c-4292-9911-a010e9dc127f" config-ref="JSON_Logger_Config1" message="Posting Customer"/>
+		<ee:transform doc:name="Setting Payload">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[{
+    firstName__c: payload.firstName,
+    lastName__c: payload.lastName,
+    phoneNumber__c: payload.phoneNumber,
+    email__c: payload.email,
+    address1__c: payload.address.address1,
+    city__c: payload.address.city,
+    zipCode__c: payload.address.zipCode as Number,
+    country__c: payload.address.country
+}]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<salesforce:create type="customer__c" doc:name="Posting Customer" doc:id="6c98a3ac-d16d-4ad1-85b0-35d4bef4dcdb" config-ref="Salesforce_Config">
+		</salesforce:create>
+		<ee:transform doc:name="Transforming  Data" doc:id="0f944487-894f-47de-8a39-94fc4af0e64f">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload.items[0].payload.id
+
+
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="Posting Customer Ended" doc:id="9099c19d-7839-46f2-b0c5-390724602066" config-ref="JSON_Logger_Config1" message="Posting Customer Ended"/>
+	</sub-flow>
+	
+</mule>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="post-item" doc:id="95496574-1bc7-4be1-8413-61a7f61ada6b" >
+		<json-logger:logger doc:name="Posting Items" doc:id="ca358be0-18ed-45e4-94dd-5d421bf4f124" config-ref="JSON_Logger_Config1" message="Posting Items"/>
+		<ee:transform doc:name="Setting Payload">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+    id__c: payload.id[index],
+    category__c: payload.category[index],
+    quantity__c: payload.quantity[index],
+    size__c: payload.size[index],
+    orderId__c: payload.orderId[index]
+} )]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<salesforce:create doc:name="Posting Item" doc:id="04110702-94c5-4f24-913c-9c24e621f606" config-ref="Salesforce_Config" type="item__c" />
+		<ee:transform doc:name="Transforming  Data" doc:id="91aca273-b8f0-4907-aefc-ae6020d34990">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"code": 200, 
+	"message": "Success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="Posting Items Ended" doc:id="5187535d-f06d-48b0-bd48-cfb5460d601b" config-ref="JSON_Logger_Config1" message="Posting Items Ended"/>
+	</sub-flow>
+	
+</mule>

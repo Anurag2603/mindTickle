@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+    <flow name="as-micorp-sapi-main" doc:id="fece3f38-cbb2-47ad-b1d0-5b1bbf02f21f">
+        <http:listener config-ref="as-micorp-sapi-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="Correlation Id" doc:id="8d8aa876-2965-45ee-ad50-f765b89dabc9">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="correlationId"><![CDATA[attributes.headers.'x-correlation-id']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<apikit:router config-ref="as-micorp-sapi-config" doc:id="fc09c696-7e60-43de-bb8d-6b6b67f95ab6"/>
+		<error-handler ref="global-error-handlerError_Handler" />
+        
+    </flow>
+    <flow name="get:\customer\(email):as-micorp-sapi-config" doc:id="e7865962-d4c9-41f7-b017-6454b526440d" >
+		<json-logger:logger doc:name="Start" doc:id="4a361560-4483-4b61-afce-60c5f45bc2f9" config-ref="JSON_Logger_Config1" message="Entering into flow reference" />
+		<flow-ref doc:name="Flow Reference to get Customer" doc:id="6edca7d6-aac3-4387-b414-f0a6277a7e40" name="get-customer"/>
+		<json-logger:logger doc:name="End" doc:id="bbffb359-11bb-4d0c-a158-2549c84a43a9" config-ref="JSON_Logger_Config1" message="Exiting flow reference"/>
+	</flow>
+	<flow name="post:\customer:application\json:as-micorp-sapi-config" doc:id="dcc75eff-4c0e-47f8-b990-82904650adc8" >
+		<json-logger:logger doc:name="Start" doc:id="0013c2af-b673-47ad-9844-5a81f9f884f8" config-ref="JSON_Logger_Config1" message="Entering into flow reference"/>
+		<flow-ref doc:name="post-customer" doc:id="b3d8d289-c5d6-449a-b2a5-98202d4102d5" name="post-customer"/>
+		<json-logger:logger doc:name="End" doc:id="8c7b6c1e-5e26-4ab3-87d1-e96213c1d315" config-ref="JSON_Logger_Config1" message="Exiting flow reference" />
+	</flow>
+	<flow name="post:\order:application\json:as-micorp-sapi-config" doc:id="89db2dcf-67f0-41cb-9e3a-6ab3587107a1" >
+		<json-logger:logger doc:name="Start" doc:id="eca86a4b-e130-4a85-986c-3f58b7af708c" config-ref="JSON_Logger_Config1" message="Entering into flow reference" />
+		<flow-ref doc:name="Flow Reference to post Order" doc:id="ff8bb22d-35fa-4870-a554-8236f67ffc20" name="post-order"/>
+		<json-logger:logger doc:name="End" doc:id="36978487-b394-4a3f-b571-05c041c72a81" config-ref="JSON_Logger_Config1" message="Exiting flow reference" />
+	</flow>
+	<flow name="post:\item:application\json:as-micorp-sapi-config" doc:id="455c1764-a8ea-40b2-95b2-8278151774ab" >
+		<json-logger:logger doc:name="Start" doc:id="673fa48a-5902-477a-9aa2-f848de643500" config-ref="JSON_Logger_Config1" message="Entering into flow reference" />
+		<flow-ref doc:name="Flow Reference to post item" doc:id="ecca94af-e4ed-4a1e-becb-d537a402deab" name="post-item"/>
+		<json-logger:logger doc:name="End" doc:id="97b8ff2f-03b5-4cb1-97f4-5f2e18981c26" config-ref="JSON_Logger_Config1" message="Exiting flow reference" />
+	</flow>
+	<flow name="get:\healthCheck:as-micorp-sapi-config" doc:id="08809820-2b9c-4c40-9def-a544c66c0da2" >
+		<json-logger:logger doc:name="Start" doc:id="ce85d18a-f436-4861-b9c3-008d636b3637" config-ref="JSON_Logger_Config1" message="Entering into flow reference" />
+		<flow-ref doc:name="Flow Reference to HealthCheck" doc:id="b6f35689-f288-4563-a021-c7ca7511755b" name="health-check"/>
+		<json-logger:logger doc:name="End" doc:id="ab63ec1c-7e37-455e-bd58-b867bcd749b4" config-ref="JSON_Logger_Config1" message="Exiting flow reference" />
+	</flow>
+<!-- [STUDIO:"as-micorp-sapi-console"]	<flow name="as-micorp-sapi-console">
+        <http:listener config-ref="as-micorp-sapi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200&#93;">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}&#93;&#93;&#93;></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500&#93;">
+                <http:body><![CDATA[#[payload&#93;&#93;&#93;></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}&#93;&#93;&#93;></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="as-micorp-sapi-config" />
+    </flow> [STUDIO] -->
+</mule>
